@@ -48,6 +48,19 @@ class Player(pygame.sprite.Sprite):
         #Centraliza no baixo da tela.
         self.rect.centerx = WIDTH / 2
         self.rect.bottom = HEIGHT - 10
+        
+        #Velocidade da nave
+        self.speedx = 0
+    def update(self):
+        self.rect.x += self.speedx
+        
+        #Mantem dentro da tela
+        if self.rect.right > WIDTH:
+            self.rect.right = WIDTH
+        if self.rect.left < 0:
+            self.rect.left = 0
+            
+        
 
 # Tamanho da tela.
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -61,6 +74,13 @@ clock = pygame.time.Clock()
 # Carrega o fundo do jogo
 background = pygame.image.load(path.join(img_dir, 'starfield.png')).convert()
 background_rect = background.get_rect()
+
+#Cria uma nave chamando a classe 
+player = Player()
+
+#Cria um grupo de sprites e adiciona a nave
+all_sprites = pygame.sprite.Group()
+all_sprites.add(player)
 
 # Comando para evitar travamentos.
 try:
@@ -78,7 +98,23 @@ try:
             # Verifica se foi fechado
             if event.type == pygame.QUIT:
                 running = False
-    
+                
+            #Verifica se apertou alguma tecla.
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    player.speedx = -8
+                if event.key == pygame.K_RIGHT:
+                    player.speedx = 8
+                    
+            #Verifica se alguma tecla soltou.
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_LEFT:
+                    player.speedx = 0
+                if event.type == pygame.K_RIGHT:
+                    player.speedX = 0
+        #Depois de cada evento
+        #Atualizar as sprites
+        all_sprites.update()
         # A cada loop, redesenha o fundo e os sprites
         screen.fill(BLACK)
         screen.blit(background, background_rect)
