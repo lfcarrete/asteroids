@@ -2,6 +2,7 @@
 
 # Importando as bibliotecas necessárias.
 import pygame
+import random
 from os import path
 
 # Estabelece a pasta que contem as figuras.
@@ -42,7 +43,7 @@ class Player(pygame.sprite.Sprite):
         #Deixando transparente.
         self.image.set_colorkey(BLACK)
         
-        #Detalhe sobre pocionamento.
+        #Detalhe sobre posicionamento.
         self.rect = self.image.get_rect()
         
         #Centraliza no baixo da tela.
@@ -66,14 +67,28 @@ class Mob(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
     
         #Carregando imagem
-        Mob_img = Mob.image.load(path.join(img_dir, "meteorBrown_med1.png")).convert
-        self.image = Mob_img
+        mob_img = pygame.image.load(path.join(img_dir, "meteorBrown_med1.png")).convert
+        self.image = mob_img
     
         #Diminui o tamanho da imagem
-        self.image = pygame.transform.scale(Mob_img, (50, 38))
+        self.image = pygame.transform.scale(mob_img, (50, 38))
         
         #Deixando transparente
         self.image.set_colorkey(BLACK) #PAREI AQUIII
+        
+        #Detalhe sobre o posicionamento.
+        self.rect = self.image.get_rect()
+        
+        #Posicionamento do meteoro.
+        self.rect.randomx = random.randrange(0, WIDTH)
+        self.rect.randomy = random.randrange(-100, -40)
+        
+        #Velocidade asteroid
+        self.speedx = random.randrange(-3, 3)
+        self.speedy = random.randrange(2, 9)
+    def update(self):
+        self.rect.y += self.speedy
+        self.rect.x += self.speedx
 
 # Tamanho da tela.
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -90,10 +105,12 @@ background_rect = background.get_rect()
 
 #Cria uma nave chamando a classe 
 player = Player()
+mobs = Mob()
 
 #Cria um grupo de sprites e adiciona a nave
 all_sprites = pygame.sprite.Group()
 all_sprites.add(player)
+all_sprites.add(mobs)
 
 # Comando para evitar travamentos.
 try:
