@@ -59,8 +59,21 @@ class Player(pygame.sprite.Sprite):
             self.rect.right = WIDTH
         if self.rect.left < 0:
             self.rect.left = 0
-            
+class Mob(pygame.sprite.Sprite):
+    #Construtor da classe.
+    def __init__ (self):
+    #Construtor da clase pai
+        pygame.sprite.Sprite.__init__(self)
+    
+        #Carregando imagem
+        Mob_img = Mob.image.load(path.join(img_dir, "meteorBrown_med1.png")).convert
+        self.image = Mob_img
+    
+        #Diminui o tamanho da imagem
+        self.image = pygame.transform.scale(Mob_img, (50, 38))
         
+        #Deixando transparente
+        self.image.set_colorkey(BLACK) #PAREI AQUIII
 
 # Tamanho da tela.
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
