@@ -157,6 +157,8 @@ background_rect = background.get_rect()
 pygame.mixer.music.load(path.join(snd_dir,"tgfcoder-FrozenJam-SeamlessLoop.ogg"))
 pygame.mixer.music.set_volume(0.4)
 boom_sound = pygame.mixer.Sound(path.join(snd_dir,"expl3.wav"))
+pew_sound = pygame.mixer.Sound(path.join(snd_dir, "pew.wav"))
+dest_sound = pygame.mixer.Sound(path.join(snd_dir, "expl6.wav"))
 
 #Cria uma nave chamando a classe 
 player = Player()
@@ -200,9 +202,13 @@ try:
                 if event.key == pygame.K_RIGHT:
                     player.speedx = 8
                 if event.key == pygame.K_SPACE:
+                    pew_sound.play()
                     bullet = Tiro(player.rect.centerx, player.rect.top)
                     all_sprites.add(bullet)
                     bullets.add(bullet)
+                    
+                  
+                    
 
                 
                     
@@ -221,6 +227,7 @@ try:
         
         bullet_hit = pygame.sprite.groupcollide(mobs, bullets, True, True)
         for hit in bullet_hit:
+            dest_sound.play()
             m = Mob()
             all_sprites.add(m)
             mobs.add(m)
