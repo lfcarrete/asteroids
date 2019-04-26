@@ -3,6 +3,7 @@
 # Importando as bibliotecas necessárias.
 import pygame
 import random
+import time
 from os import path
 
 # Estabelece a pasta que contem as figuras.
@@ -65,6 +66,38 @@ class Player(pygame.sprite.Sprite):
             self.rect.right = WIDTH
         if self.rect.left < 0:
             self.rect.left = 0
+            
+            
+class Tiro(pygame.sprite.Sprite):
+    #Construtor da classe.
+    def __init__(self, x, y):
+        #Construtor classe pai.
+        pygame.sprite.Sprite.__init__(self)
+        #Carregando imagem.
+        tiro_img = pygame.image.load(path.join(img_dir,"laserRed16.png")).convert()
+        self.image = tiro_img
+        
+        #Tamanho da imagem
+        self.image = pygame.transform.scale(tiro_img, (10, 40))
+        
+        #Deixando transparente
+        self.image.set_colorkey(BLACK)
+        
+        #Detalhe sobre o posicionamento
+        self.rect = self.image.get_rect()
+        
+        self.rect.centerx = x
+        self.rect.bottom = y
+       
+        #Velocidade tiro
+        self.speedy = -10
+        
+    def update(self):
+        self.rect.y += self.speedy
+    
+        if self.rect.bottom < 0:
+            self.kill()
+        
 class Mob(pygame.sprite.Sprite):
     #Construtor da classe.
     def __init__ (self):
@@ -98,6 +131,14 @@ class Mob(pygame.sprite.Sprite):
     def update(self):
         self.rect.y += self.speedy
         self.rect.x += self.speedx
+        
+        if self.rect.left > WIDTH or self.rect.right < 0:
+            self.rect.centerx = random.randrange(0, WIDTH)
+            self.rect.centery = random.randrange(-100, -40)
+        if self.rect.bottom > HEIGHT:
+            self.rect.centerx = random.randrange(0, WIDTH)
+            self.rect.centery = random.randrange(-100, -40)
+        
 
 # Tamanho da tela.
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -119,30 +160,19 @@ boom_sound = pygame.mixer.Sound(path.join(snd_dir,"expl3.wav"))
 
 #Cria uma nave chamando a classe 
 player = Player()
-mobs1 = Mob()
-mobs2 = Mob()
-mobs3 = Mob()
-mobs4 = Mob()
-mobs5 = Mob()
-mobs6 = Mob()
-mobs7 = Mob()
-mobs8 = Mob()
 
 
 #Cria um grupo de sprites e adiciona a nave
-mob_sprites = pygame.sprite.Group()
-mob_sprites.add(mobs1)
-mob_sprites.add(mobs2)
-mob_sprites.add(mobs3)
-mob_sprites.add(mobs4)
-mob_sprites.add(mobs5)
-mob_sprites.add(mobs6)
-mob_sprites.add(mobs7)
-mob_sprites.add(mobs8)
-
 all_sprites = pygame.sprite.Group()
 all_sprites.add(player)
-all_sprites.add(mob_sprites)
+mobs = pygame.sprite.Group()
+bullets = pygame.sprite.Group()
+
+for i in range (0,8):
+    n = Mob()
+    all_sprites.add(n)
+    mobs.add(n)
+
 
 
 # Comando para evitar travamentos.
@@ -169,6 +199,12 @@ try:
                     player.speedx = -8
                 if event.key == pygame.K_RIGHT:
                     player.speedx = 8
+                if event.key == pygame.K_SPACE:
+                    bullet = Tiro(player.rect.centerx, player.rect.top)
+                    all_sprites.add(bullet)
+                    bullets.add(bullet)
+
+                
                     
             #Verifica se alguma tecla soltou.
             if event.type == pygame.KEYUP:
@@ -176,16 +212,29 @@ try:
                     player.speedx = 0
                 if event.key == pygame.K_RIGHT:
                     player.speedx = 0
+            
         #Depois de cada evento
         #Atualizar as sprites
+     
         all_sprites.update()
-    
+        
+        
+        bullet_hit = pygame.sprite.groupcollide(mobs, bullets, True, True)
+        for hit in bullet_hit:
+            m = Mob()
+            all_sprites.add(m)
+            mobs.add(m)
+        #Checa colisao.
+        hits = pygame.sprite.spritecollide(player, mobs, False, pygame.sprite.collide_circle)
         #Toca som se bater
         if hits:
             boom_sound.play()
             time.sleep(1)
             
             running = False
+        
+            
+            
         # A cada loop, redesenha o fundo e os sprites
         screen.fill(BLACK)
         screen.blit(background, background_rect)
