@@ -7,6 +7,7 @@ from os import path
 
 # Estabelece a pasta que contem as figuras.
 img_dir = path.join(path.dirname(__file__), 'img')
+snd_dir = path.join(path.dirname(__file__), 'snd')
 
 # Dados gerais do jogo.
 WIDTH = 480 # Largura da tela
@@ -52,6 +53,10 @@ class Player(pygame.sprite.Sprite):
         
         #Velocidade da nave
         self.speedx = 0
+        
+        #Melhora colisao.
+        self.radius = 25
+        
     def update(self):
         self.rect.x += self.speedx
         
@@ -86,6 +91,10 @@ class Mob(pygame.sprite.Sprite):
         #Velocidade asteroid
         self.speedx = random.randrange(-3, 3)
         self.speedy = random.randrange(2, 9)
+        
+        #Melhora colisao.
+        self.radius = int(self.rect.width * .85 / 2)
+        
     def update(self):
         self.rect.y += self.speedy
         self.rect.x += self.speedx
@@ -102,6 +111,11 @@ clock = pygame.time.Clock()
 # Carrega o fundo do jogo
 background = pygame.image.load(path.join(img_dir, 'starfield.png')).convert()
 background_rect = background.get_rect()
+
+#Carregar som
+pygame.mixer.music.load(path.join(snd_dir,"tgfcoder-FrozenJam-SeamlessLoop.ogg"))
+pygame.mixer.music.set_volume(0.4)
+boom_sound = pygame.mixer.Sound(path.join(snd_dir,"expl3.wav"))
 
 #Cria uma nave chamando a classe 
 player = Player()
@@ -135,6 +149,7 @@ all_sprites.add(mob_sprites)
 try:
     
     # Loop principal.
+    pygame.mixer.music.play(loops =- 1)
     running = True
     while running:
         
@@ -164,6 +179,13 @@ try:
         #Depois de cada evento
         #Atualizar as sprites
         all_sprites.update()
+    
+        #Toca som se bater
+        if hits:
+            boom_sound.play()
+            time.sleep(1)
+            
+            running = False
         # A cada loop, redesenha o fundo e os sprites
         screen.fill(BLACK)
         screen.blit(background, background_rect)
