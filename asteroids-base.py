@@ -67,10 +67,10 @@ class Mob(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
     
         #Carregando imagem
-        mob_img = pygame.image.load(path.join(img_dir, "meteorBrown_med1.png")).convert
+        mob_img = pygame.image.load(path.join(img_dir,"meteorBrown_med1.png")).convert()
         self.image = mob_img
-    
-        #Diminui o tamanho da imagem
+        
+        #Diminui o tamanho da imagem.
         self.image = pygame.transform.scale(mob_img, (50, 38))
         
         #Deixando transparente
@@ -80,8 +80,8 @@ class Mob(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         
         #Posicionamento do meteoro.
-        self.rect.randomx = random.randrange(0, WIDTH)
-        self.rect.randomy = random.randrange(-100, -40)
+        self.rect.centerx = random.randrange(0, WIDTH)
+        self.rect.centery = random.randrange(-100, -40)
         
         #Velocidade asteroid
         self.speedx = random.randrange(-3, 3)
@@ -105,12 +105,31 @@ background_rect = background.get_rect()
 
 #Cria uma nave chamando a classe 
 player = Player()
-mobs = Mob()
+mobs1 = Mob()
+mobs2 = Mob()
+mobs3 = Mob()
+mobs4 = Mob()
+mobs5 = Mob()
+mobs6 = Mob()
+mobs7 = Mob()
+mobs8 = Mob()
+
 
 #Cria um grupo de sprites e adiciona a nave
+mob_sprites = pygame.sprite.Group()
+mob_sprites.add(mobs1)
+mob_sprites.add(mobs2)
+mob_sprites.add(mobs3)
+mob_sprites.add(mobs4)
+mob_sprites.add(mobs5)
+mob_sprites.add(mobs6)
+mob_sprites.add(mobs7)
+mob_sprites.add(mobs8)
+
 all_sprites = pygame.sprite.Group()
 all_sprites.add(player)
-all_sprites.add(mobs)
+all_sprites.add(mob_sprites)
+
 
 # Comando para evitar travamentos.
 try:
@@ -140,8 +159,8 @@ try:
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT:
                     player.speedx = 0
-                if event.type == pygame.K_RIGHT:
-                    player.speedX = 0
+                if event.key == pygame.K_RIGHT:
+                    player.speedx = 0
         #Depois de cada evento
         #Atualizar as sprites
         all_sprites.update()
